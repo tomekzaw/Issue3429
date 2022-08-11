@@ -1,112 +1,66 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
+import Animated, {Easing, Keyframe} from 'react-native-reanimated';
+import {Button, View} from 'react-native';
+import React, {useState} from 'react';
 
-import React from 'react';
-import type {Node} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+export default function App() {
+  const [show, setShow] = useState(false);
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+  const enteringAnimation = new Keyframe({
+    0: {
+      originX: 50,
+      transform: [{rotate: '45deg'}],
+    },
+    30: {
+      originX: 10,
+      transform: [{rotate: '-90deg'}],
+    },
+    100: {
+      originX: 0,
+      transform: [{rotate: '0deg'}],
+      easing: Easing.quad,
+    },
+  }).duration(2000);
 
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
+  const exitingAnimation = new Keyframe({
+    0: {
+      opacity: 1,
+      transform: [{skewX: '0deg'}],
+    },
+    30: {
+      opacity: 0.5,
+      transform: [{skewX: '40deg'}],
+      easing: Easing.exp,
+    },
+    100: {
+      opacity: 0,
+      transform: [{skewX: '-10deg'}],
+    },
+  }).duration(2000);
+
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <View style={{flexDirection: 'column-reverse'}}>
+      <Button
+        title="animate"
+        onPress={() => {
+          setShow(last => !last);
+        }}
+      />
+      <View
+        style={{height: 400, alignItems: 'center', justifyContent: 'center'}}>
+        {show && (
+          <Animated.View
+            entering={enteringAnimation}
+            exiting={exitingAnimation}
+            style={{
+              height: 100,
+              width: 200,
+              backgroundColor: 'blue',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          />
+        )}
+      </View>
     </View>
   );
-};
-
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
-
-export default App;
+}
